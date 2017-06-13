@@ -113,11 +113,14 @@
                          (mstdn-user-display-name user)
                          (mstdn-application-name app)
                          (mstdn-entry-content entry))))
-      (goto-char 1)
-      (insert (mstdn-text-plain text))
-      (if (< cur 50) ;; なんとなくこの文字以内なら下に流れないようにする
-          (goto-char cur)
-        (goto-char (+ cur (length text)))))))
+      (when (not (equal "sync.twi2mstdn.space" app))
+        (progn
+          (goto-char 1)
+          (insert (mstdn-text-plain text))
+          (if (< cur 50) ;; なんとなくこの文字以内なら下に流れないようにする
+              (goto-char cur)
+            (goto-char (+ cur (length text)))))))))
+
 
 
 (defun mstdn-output-filter (process output)
