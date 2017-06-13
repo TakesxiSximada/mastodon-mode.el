@@ -6,6 +6,7 @@
 (require 'cl)
 (require 'json)
 (require 'request)
+(require 'xah-replace-pairs)
 
 (defvar timeline-buffer-name "*TIMELINE*")
 (defvar timeline-mstdn-format "-----------------------------------------------
@@ -113,7 +114,7 @@
                          (mstdn-user-display-name user)
                          (mstdn-application-name app)
                          (mstdn-entry-content entry))))
-      (when (not (equal "sync.twi2mstdn.space" app))
+      (if (not (equal "sync.twi2mstdn.space" (mstdn-application-name app)))
         (progn
           (goto-char 1)
           (insert (mstdn-text-plain text))
@@ -137,7 +138,7 @@
         (apply 'start-process
                (append `(,mstdn-timeline-process-name
                          ,mstdn-timeline-process-buffer-name)
-                       (mstdn-curl-cmd mstdn-url-local)))
+                       (mstdn-curl-cmd mstdn-url-user)))
         (setq mstdn-timeline-process-ctl-timer
           (run-at-time "0 sec" 4 'mstdn-insert-entry-timer-ctl)))))
 
@@ -488,3 +489,9 @@
     "</p>" ""
     (replace-regexp-in-string
      "<p>" "" txt))))
+
+(defun mstdn-text-plain (txt)
+  "mastodonのbodyはhtmlで帰ってくるためタグを表示用のtextに変換する"
+  (xah-replace-regexp-pairs-in-string txt
+                                      '(("<br />" "\n")
+                                        ("<[^\<\>]+>" ""))))
