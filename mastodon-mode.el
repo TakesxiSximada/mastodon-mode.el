@@ -104,6 +104,7 @@
   "書き込み"
   (with-current-buffer (get-buffer-create timeline-buffer-name)
     (let* ((cur (point))
+           (pos (point-marker))
            (user (mstdn-entry-user entry))
            (app (mstdn-entry-application entry))
            (text (format timeline-mstdn-format
@@ -119,7 +120,7 @@
           (insert (mstdn-text-plain text))
           (if (< cur 50) ;; なんとなくこの文字以内なら下に流れないようにする
               (goto-char cur)
-            (goto-char (+ cur (length text)))))))))
+            (goto-char (marker-position pos))))))))
 
 
 
