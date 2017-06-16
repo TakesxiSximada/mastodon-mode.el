@@ -5,6 +5,7 @@
 
 (require 'cl)
 (require 'json)
+(require 'subr-x)
 (require 'request)
 (require 'xah-replace-pairs)
 
@@ -16,7 +17,6 @@
 
 ")
 (defvar mstdn-toot-footer "
-
 #----------------------------------------------------------------
 # in_reply_to_id: %s;
 # sensitive: ; NSFW
@@ -44,7 +44,6 @@
 (defvar mastodon-api-endpoint-statuses (concat mastodon-api-endpoint "/api/v1/statuses"))
 (defvar mastodon-api-endpoint-favourite (concat mastodon-api-endpoint "/api/v1/statuses/%d/favourite"))
 (defvar mastodon-api-endpoint-reblog (concat mastodon-api-endpoint "/api/v1/statuses/%d/reblog"))
-
 
 (defun mstdn-credential-api-token ()
   "auth tokenを取得する"
@@ -190,6 +189,7 @@
   (mstdn-timeline-process-timer-cancel))
 
 
+
 (defun mstdn-get-entry ()
   "Mastodonのstreamの1エントリを取得する"
   (with-current-buffer (get-buffer mstdn-timeline-process-buffer-name)
@@ -321,10 +321,10 @@
   (with-current-buffer (mastodon-edit-buffer)
     (let ((txt (buffer-substring-no-properties (point-min) (point-max))))
       `(("status" . ,(car (split-string txt "#-----------")))
-        ("in_reply_to_id" . ,(mstdn-status-edit-attr "in_reply_to_id" txt))
-        ("sensitive" . ,(mstdn-status-edit-attr "sensitive" txt))
-        ("spoiler_text" . ,(mstdn-status-edit-attr "spoiler_text" txt))
-        ("visibility" . ,(mstdn-status-edit-attr "visibility" txt))))))
+        ("in_reply_to_id" . ,(or (mstdn-status-edit-attr "in_reply_to_id" txt) ""))
+        ("sensitive" . ,(or (mstdn-status-edit-attr "sensitive" txt) ""))
+        ("spoiler_text" . ,(or (mstdn-status-edit-attr "spoiler_text" txt) ""))
+        ("visibility" . ,(or (mstdn-status-edit-attr "visibility" txt) ""))))))
 
 
 (defun mastodon-api-headers ()
