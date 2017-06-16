@@ -24,8 +24,8 @@
 # visibility: public; direct, private, unlisted, public
 # ---------------------------------------------------------------
 ")
-(defvar mstdn-url-user "https://streaming.mstdn.jp/api/v1/streaming/user/")
-(defvar mstdn-url-local "https://streaming.mstdn.jp/api/v1/streaming/public/local/")
+(defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")
+(defvar mstdn-url-local "https://mstdn.jp/api/v1/streaming/public/local/")
 (defvar mstdn-process-name-local "*MSTDN_LOCAL*")
 (defvar mstdn-timeline-process-name "*MSTDN*")
 (defvar mstdn-timeline-process-buffer-name "*MSTDN/mstdn.jp/global/local*")
@@ -137,7 +137,7 @@
         (apply 'start-process
                (append `(,mstdn-timeline-process-name
                          ,mstdn-timeline-process-buffer-name)
-                       (mstdn-curl-cmd mstdn-url-user)))
+                       (mstdn-curl-cmd mstdn-url-local)))
         (setq mstdn-timeline-process-ctl-timer
           (run-at-time "0 sec" 4 'mstdn-insert-entry-timer-ctl)))))
 
