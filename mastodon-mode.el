@@ -16,8 +16,7 @@
 %s
 
 ")
-(defvar mstdn-toot-footer "
-%s
+(setq mstdn-toot-footer "%s
 
 #----------------------------------------------------------------
 # in_reply_to_id: %s;
@@ -240,7 +239,7 @@
   "リプライ編集用バッファに移動する"
   (interactive)
   (let ((current-id (mstdn-timeline-entry-current-id))
-        (reply-to ""))
+        (reply-to (mstdn-timeline-entry-username)))
     (mastodon-edit-mode)
     (with-current-buffer (mastodon-edit-buffer)
       (if (eq (point-max) 1)
@@ -248,19 +247,34 @@
             (insert (format mstdn-toot-footer reply-to current-id))
             (goto-char 1))))))
 
-
-(defun mstdn-timeline-entry-current-id ()
+(defun mstdn-timeline-entry-goto-current-entry ()
   (let ((cur (point)))
     (move-end-of-line 1)
     (search-backward "-------------------------------")
     (move-beginning-of-line 2)
-    (let ((start (point)))
-      (forward-word)
-      (let ((end (point)))
-        (goto-char cur)
-        (string-to-number (buffer-substring-no-properties start end))))))
+    cur))
 
 
+(defun mstdn-timeline-entry-current-id ()
+  "TL上のトゥートからトゥートidを取得する"
+  (let ((cur (mstdn-timeline-entry-goto-current-entry))
+        (start (point)))
+    (forward-word)
+    (let ((end (point)))
+      (goto-char cur)
+      (string-to-number (buffer-substring-no-properties start end)))))
+
+(defun mstdn-re-search (pattern)
+  "カレントバッファから正規表現にマッチする文字列を取得"
+  (re-search-forward pattern nil t)
+  (match-string 0))
+
+(defun mstdn-timeline-entry-username ()
+  "TL上のトゥートからトゥートしたusernameを取得する"
+  (let ((cur (mstdn-timeline-entry-goto-current-entry))
+        (username (mstdn-re-search "\@\\w+")))
+    (goto-char cur)
+    username))
 
 (defun mastodon-fav-active ()
   "ファボ投下コマンド"
