@@ -467,7 +467,6 @@
     (define-key km (kbd "C-i") 'mastodon-fav-active) ;; ファボ
     (define-key km (kbd "C-d") 'mastodon-reblog-active) ;; ブースト
     (define-key km (kbd "C-u") 'mastodon-fabre-active) ;; ファブリ
-    ;; (define-key km (kbd "C-d") 'mastodon-timeline-entry-id-active) ;; test
     ))
 
 
