@@ -9,13 +9,17 @@
 (require 'request)
 (require 'xah-replace-pairs)
 
-(defvar timeline-buffer-name "*TIMELINE*")
+(defvar timeline-buffer-name "*TIMELINE*")  ;; timelineのバッファ名
+
+;; timelineに表示されるエントリーのフォーマット
 (defvar timeline-mstdn-format "-----------------------------------------------
 %d: by %d @%s %s from %s
 ..............................
 %s
 
 ")
+
+;; 投稿エントリー編集用バッファのフォーマット
 (setq mstdn-toot-footer "%s
 
 #----------------------------------------------------------------
@@ -25,26 +29,26 @@
 # visibility: public; direct, private, unlisted, public
 # ---------------------------------------------------------------
 ")
-(defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")
-(defvar mstdn-url-local "https://mstdn.jp/api/v1/streaming/public/local/")
-(defvar mstdn-process-name-local "*MSTDN_LOCAL*")
-(defvar mstdn-timeline-process-name "*MSTDN*")
-(defvar mstdn-timeline-process-buffer-name "*MSTDN/mstdn.jp/global/local*")
-(defvar mastodon-edit-buffer-name "*MASTODON*")
-(setq mstdn-timeline-process-timer nil)
-(setq mstdn-timeline-process-ctl-timer nil)
-(defvar mastodon-auth-token-file "~/.config/mastodon/mstdn.jp/user.txt")
-(defvar mastodon-edit-mode-name "mastodon-edit")
-(defvar mastodon-mode-name "mastodon-mode")
-(defvar mastodon-timeline-mode-map (make-sparse-keymap))
-(defvar mastodon-edit-mode-map (make-sparse-keymap))
-(defvar mastodon-timeline-mode-name "mastodon timeline")
-(defvar mastodon-timeline-buffer-name timeline-buffer-name)
-(defvar mastodon-api-endpoint "https://mstdn.jp")
-(defvar mastodon-api-endpoint-accounts-follow (concat mastodon-api-endpoint "/api/v1/accounts/%d/follow"))
-(defvar mastodon-api-endpoint-statuses (concat mastodon-api-endpoint "/api/v1/statuses"))
-(defvar mastodon-api-endpoint-favourite (concat mastodon-api-endpoint "/api/v1/statuses/%d/favourite"))
-(defvar mastodon-api-endpoint-reblog (concat mastodon-api-endpoint "/api/v1/statuses/%d/reblog"))
+(defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")  ;; home timelineのurl
+(defvar mstdn-url-local "https://mstdn.jp/api/v1/streaming/public/local/")  ;; local timelineのurl
+(defvar mstdn-timeline-process-name "*MSTDN*")  ;; timelineを取得するcurlのプロセス名
+(defvar mstdn-timeline-process-buffer-name "*MSTDN/mstdn.jp/global/local*")  ;; timelineを取得するcurlのプロセスバッファ名
+(defvar mastodon-edit-buffer-name "*MASTODON*")  ;; 編集バッファ名
+(defvar mastodon-auth-token-file "~/.config/mastodon/mstdn.jp/user.txt")  ;; auth token保持ファイル
+(defvar mastodon-edit-mode-name "mastodon-edit")  ;; 編集モード名
+(defvar mastodon-timeline-mode-map (make-sparse-keymap))  ;; タイムラインモードのキーマップ
+(defvar mastodon-edit-mode-map (make-sparse-keymap))  ;; 編集モードのキーマップ
+(defvar mastodon-timeline-mode-name "mastodon timeline")  ;; タイムラインモード名
+(defvar mastodon-timeline-buffer-name timeline-buffer-name)  ;; タイムラインバッファ名
+(defvar mastodon-api-endpoint "https://mstdn.jp")  ;; APIサーバ
+(defvar mastodon-api-endpoint-accounts-follow (concat mastodon-api-endpoint "/api/v1/accounts/%d/follow"))  ;; フォローエンドポイント
+(defvar mastodon-api-endpoint-statuses (concat mastodon-api-endpoint "/api/v1/statuses"))  ;; トゥーとエンドポイント
+(defvar mastodon-api-endpoint-favourite (concat mastodon-api-endpoint "/api/v1/statuses/%d/favourite"))  ;; ファボエンドポイント
+(defvar mastodon-api-endpoint-reblog (concat mastodon-api-endpoint "/api/v1/statuses/%d/reblog"))  ;; リブログエンドポイント
+
+
+(setq mstdn-timeline-process-timer nil)  ;; timeline取得用のプロセスタイマー
+(setq mstdn-timeline-process-ctl-timer nil)  ;; timeline取得用のプロセスのコントロール用タイマー
 
 (defun mstdn-credential-api-token ()
   "auth tokenを取得する"
@@ -479,9 +483,6 @@
   "Major mode for mastodon."
   (interactive)
   (mastodon-timeline-mode))
-  ;; (kill-all-local-variables)
-  ;; (setq mode-name mastodon-mode-name)
-  ;; (use-local-map mastodon-mode-map))
 
 
 
