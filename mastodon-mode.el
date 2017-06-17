@@ -11,12 +11,14 @@
 
 (defvar timeline-buffer-name "*TIMELINE*")
 (defvar timeline-mstdn-format "-----------------------------------------------
-%d: by %d @ %s %s from %s
+%d: by %d @%s %s from %s
 ..............................
 %s
 
 ")
 (defvar mstdn-toot-footer "
+%s
+
 #----------------------------------------------------------------
 # in_reply_to_id: %s;
 # sensitive: ; NSFW
@@ -229,7 +231,7 @@
   (with-current-buffer (mastodon-edit-buffer)
     (if (eq (point-max) 1)
         (progn
-          (insert (format mstdn-toot-footer ""))
+          (insert (format mstdn-toot-footer "" ""))
           (goto-char 1)))))
 
 
@@ -237,12 +239,13 @@
 (defun mastodon-edit-reply-active ()
   "リプライ編集用バッファに移動する"
   (interactive)
-  (let ((current-id (mstdn-timeline-entry-current-id)))
+  (let ((current-id (mstdn-timeline-entry-current-id))
+        (reply-to ""))
     (mastodon-edit-mode)
     (with-current-buffer (mastodon-edit-buffer)
       (if (eq (point-max) 1)
           (progn
-            (insert (format mstdn-toot-footer current-id))
+            (insert (format mstdn-toot-footer reply-to current-id))
             (goto-char 1))))))
 
 
