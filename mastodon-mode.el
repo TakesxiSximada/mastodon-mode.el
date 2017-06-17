@@ -431,15 +431,18 @@
   (let ((km mastodon-timeline-mode-map))
     (define-key km (kbd "C-c C-s") 'mastodon-edit-active)  ;; トゥート
     (define-key km (kbd "C-j") 'mastodon-edit-reply-active) ;; リプライ
+    (define-key km (kbd "RET") 'mastodon-edit-reply-active) ;; リプライ
     (define-key km (kbd "C-i") 'mastodon-fav-active) ;; ファボ
     (define-key km (kbd "C-d") 'mastodon-reblog-active) ;; ブースト
     (define-key km (kbd "C-u") 'mastodon-fabre-active) ;; ファブリ
     ;; (define-key km (kbd "C-d") 'mastodon-timeline-entry-id-active) ;; test
     ))
 
+
 (when mastodon-edit-mode-map
   (let ((km mastodon-edit-mode-map))
     (define-key km (kbd "C-c C-c") 'mastodon-edit-post-active)))
+
 
 (defun mastodon-mode ()
   "Major mode for mastodon."
