@@ -255,6 +255,20 @@
     cur))
 
 
+(defun mstdn-timeline-entry-goto-next-entry-active ()
+  "次のエントリーに移動"
+  (interactive)
+  (mstdn-timeline-entry-goto-current-entry)
+  (move-beginning-of-line -1)
+  (mstdn-timeline-entry-goto-current-entry))
+
+(defun mstdn-timeline-entry-goto-before-entry-active ()
+  "前のエントリーに移動"
+  (interactive)
+  (mstdn-timeline-entry-goto-current-entry)
+  (search-forward "-------------------------------")
+  (mstdn-timeline-entry-goto-current-entry))
+
 (defun mstdn-timeline-entry-current-id ()
   "TL上のトゥートからトゥートidを取得する"
   (let ((cur (mstdn-timeline-entry-goto-current-entry))
@@ -447,7 +461,8 @@
 (when mastodon-timeline-mode-map
   (let ((km mastodon-timeline-mode-map))
     (define-key km (kbd "C-c C-s") 'mastodon-edit-active)  ;; トゥート
-    (define-key km (kbd "C-j") 'mastodon-edit-reply-active) ;; リプライ
+    (define-key km (kbd "C-j") 'mstdn-timeline-entry-goto-before-entry-active) ;; 前のエントリーに移動
+    (define-key km (kbd "C-k") 'mstdn-timeline-entry-goto-next-entry-active) ;; 次のエントリに移動
     (define-key km (kbd "RET") 'mastodon-edit-reply-active) ;; リプライ
     (define-key km (kbd "C-i") 'mastodon-fav-active) ;; ファボ
     (define-key km (kbd "C-d") 'mastodon-reblog-active) ;; ブースト
@@ -492,9 +507,6 @@
   (mastodon-mode))
 
 
-(provide 'mastodon-mode)
-
-
 (defun mstdn-fabre (status-id)
   "ファボ -> BT -> エアリプ の流れ"
   (mastodon-api-favourite status-id)
@@ -516,3 +528,6 @@
   (xah-replace-regexp-pairs-in-string txt
                                       '(("<br />" "\n")
                                         ("<[^\<\>]+>" ""))))
+
+
+(provide 'mastodon-mode)
