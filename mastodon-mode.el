@@ -31,6 +31,7 @@
 ")
 (defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")  ;; home timelineのurl
 (defvar mstdn-url-local "https://mstdn.jp/api/v1/streaming/public/local/")  ;; local timelineのurl
+(defun mstdn-url-get-current () mstdn-url-user)
 (defvar mstdn-timeline-process-name "*MSTDN*")  ;; timelineを取得するcurlのプロセス名
 (defvar mstdn-timeline-process-buffer-name "*MSTDN/mstdn.jp/global/local*")  ;; timelineを取得するcurlのプロセスバッファ名
 (defvar mastodon-edit-buffer-name "*MASTODON*")  ;; 編集バッファ名
@@ -143,7 +144,7 @@
         (apply 'start-process
                (append `(,mstdn-timeline-process-name
                          ,mstdn-timeline-process-buffer-name)
-                       (mstdn-curl-cmd mstdn-url-local)))
+                       (mstdn-curl-cmd (mstdn-url-get-current))))
         (setq mstdn-timeline-process-ctl-timer
           (run-at-time "0 sec" 4 'mstdn-insert-entry-timer-ctl)))))
 
@@ -225,8 +226,6 @@
   "編集用バッファを削除する"
   (kill-buffer (mastodon-edit-buffer)))
 
-
-
 (defun mastodon-edit-active ()
   "編集用バッファに移動する"
   (interactive)
@@ -290,9 +289,10 @@
 (defun mstdn-timeline-entry-username ()
   "TL上のトゥートからトゥートしたusernameを取得する"
   (let ((cur (mstdn-timeline-entry-goto-current-entry))
-        (username (mstdn-re-search "\@\\w+")))
+        (username (mstdn-re-search "\@[^\s]+")))
     (goto-char cur)
     username))
+
 
 (defun mastodon-fav-active ()
   "ファボ投下コマンド"
