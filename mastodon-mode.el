@@ -26,7 +26,7 @@
 # in_reply_to_id: %s;
 # sensitive: ; NSFW
 # spoiler_text: ;
-# visibility: public; direct, private, unlisted, public
+# visibility: %s; direct, private, unlisted, public
 # ---------------------------------------------------------------
 ")
 (defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")  ;; home timelineのurl
@@ -177,7 +177,7 @@
             ;; エントリー挿入タイマーの生成
             (setq mstdn-timeline-process-timer
                   (run-at-time
-                   "0 sec" 0.1
+                   "0 sec" 0.3
                    'mstdn-insert-entry-sync)))))))
 
 
@@ -233,7 +233,7 @@
   (with-current-buffer (mastodon-edit-buffer)
     (if (eq (point-max) 1)
         (progn
-          (insert (format mstdn-toot-footer "" ""))
+          (insert (format mstdn-toot-footer "" "" "public"))
           (goto-char 1)))))
 
 
@@ -247,7 +247,7 @@
     (with-current-buffer (mastodon-edit-buffer)
       (if (eq (point-max) 1)
           (progn
-            (insert (format mstdn-toot-footer reply-to current-id))
+            (insert (format mstdn-toot-footer reply-to current-id "private"))
             (goto-char 1))))))
 
 (defun mstdn-timeline-entry-goto-current-entry ()
