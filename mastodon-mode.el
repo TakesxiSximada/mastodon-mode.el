@@ -31,7 +31,7 @@
 ")
 (defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")  ;; home timelineのurl
 (defvar mstdn-url-local "https://mstdn.jp/api/v1/streaming/public/local/")  ;; local timelineのurl
-(defun mstdn-url-get-current () mstdn-url-user)
+(defun mstdn-url-get-current () mstdn-url-local)
 (defvar mstdn-timeline-process-name "*MSTDN*")  ;; timelineを取得するcurlのプロセス名
 (defvar mstdn-timeline-process-buffer-name "*MSTDN/mstdn.jp/global/local*")  ;; timelineを取得するcurlのプロセスバッファ名
 (defvar mastodon-edit-buffer-name "*MASTODON*")  ;; 編集バッファ名
@@ -71,7 +71,7 @@
 
 (defun mstdn-curl-cmd (url)
   "curlコマンドを生成する"
-  `("curl" "--header" ,(mstdn-api-header) ,url))
+  `("curl" "--no-buffer" "--header" ,(mstdn-api-header) ,url))
 
 
 ;; mastodon protocol user adapter
