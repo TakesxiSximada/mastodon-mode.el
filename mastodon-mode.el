@@ -3,6 +3,8 @@
 ;; 停止    : (mstdn-timeline-reader-stop)
 ;; 消去    : (mstdn-clear-entries)
 
+
+
 (require 'cl)
 (require 'json)
 (require 'subr-x)
@@ -471,6 +473,7 @@
     (define-key km (kbd "C-i") 'mastodon-fav-active) ;; ファボ
     (define-key km (kbd "C-d") 'mastodon-reblog-active) ;; ブースト
     (define-key km (kbd "C-u") 'mastodon-fabre-active) ;; ファブリ
+    (define-key km (kbd "C-c C-@") 'mstdn-refresh-client-active) ;; 再起動
     ))
 
 
@@ -528,6 +531,15 @@
   (xah-replace-regexp-pairs-in-string txt
                                       '(("<br />" "\n")
                                         ("<[^\<\>]+>" ""))))
+
+
+
+(defun mstdn-refresh-client-active ()
+  "クライアント再起動"
+  (interactive)
+  (mstdn-timeline-reader-stop)
+  (mstdn-timeline-reader-start))
+  
 
 
 (provide 'mastodon-mode)
