@@ -334,7 +334,8 @@
   (interactive)
   (mastodon-api-post)
   (message "posted!!")
-  (mastodon-edit-buffer-close))
+  (mastodon-edit-buffer-close)
+  (switch-to-buffer (mastodon-timeline-buffer)))
 
 
 (defun mastodon-auth-token ()
@@ -447,7 +448,7 @@
 (defun mastodon-timeline-active ()
   "タイムラインバッファに移動する"
   (interactive)
-  (kill-all-local-variables)
+  ;; (kill-all-local-variables)
   (switch-to-buffer (mastodon-timeline-buffer))
   (setq mode-name mastodon-timeline-mode-name)
   (use-local-map mastodon-mode-map))
@@ -537,9 +538,10 @@
 (defun mstdn-refresh-client-active ()
   "クライアント再起動"
   (interactive)
-  (mstdn-timeline-reader-stop)
+  (ignore-errors
+    (mstdn-timeline-reader-stop))
   (mstdn-timeline-reader-start))
-  
+
 
 
 (provide 'mastodon-mode)
