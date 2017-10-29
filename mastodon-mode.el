@@ -4,7 +4,6 @@
 ;; 消去    : (mstdn-clear-entries)
 
 
-
 (require 'cl)
 (require 'json)
 (require 'subr-x)
@@ -15,7 +14,7 @@
 
 ;; timelineに表示されるエントリーのフォーマット
 (defvar timeline-mstdn-format "-----------------------------------------------
-%d: by %d @%s %s from %s
+%s: by %s @%s %s from %s
 ..............................
 %s
 
@@ -26,14 +25,14 @@
 
 #----------------------------------------------------------------
 # in_reply_to_id: %s;
-# sensitive: ; NSFW
+# sensitive: ; NSFW CW
 # spoiler_text: ;
 # visibility: %s; direct, private, unlisted, public
 # ---------------------------------------------------------------
 ")
 (defvar mstdn-url-user "https://mstdn.jp/api/v1/streaming/user/")  ;; home timelineのurl
 (defvar mstdn-url-local "https://mstdn.jp/api/v1/streaming/public/local/")  ;; local timelineのurl
-(defun mstdn-url-get-current () mstdn-url-local)
+(defun mstdn-url-get-current ()  mstdn-url-user)
 (defvar mstdn-timeline-process-name "*MSTDN*")  ;; timelineを取得するcurlのプロセス名
 (defvar mstdn-timeline-process-buffer-name "*MSTDN/mstdn.jp/global/local*")  ;; timelineを取得するcurlのプロセスバッファ名
 (defvar mastodon-edit-buffer-name "*MASTODON*")  ;; 編集バッファ名
@@ -83,6 +82,9 @@
 (defun mstdn-entry-content (entry)
   (cdr (assoc 'content (assoc :data entry))))
 
+(defun mstdn-entry-in-reply-to-account-id (entry)
+  (cdr (assoc 'in_reply_to_account_id (assoc :data entry))))
+
 (defun mstdn-entry-application (entry)
   (cdr (assoc 'application (assoc :data entry))))
 
@@ -115,6 +117,28 @@
            (pos (point-marker))
            (user (mstdn-entry-user entry))
            (app (mstdn-entry-application entry))
+           (text (format timeline-mstdn-format 1 1 "a" "b" "c" "d"))
+           ;; (text (format timeline-mstdn-format
+           ;;               "" ; mstdn-entry-id entry)
+           ;;               "" ; (mstdn-user-id user)
+           ;;               "" ; (mstdn-user-username user)
+           ;;               "" ; (mstdn-user-display-name user)
+           ;;               "" ; (mstdn-application-name app)
+           ;;               "" ;(mstdn-entry-content entry)
+           ;;               ))
+           )
+      (message text))))
+
+
+
+(defun mstdn-insert-entry (entry)
+  "書き込み"
+  (with-current-buffer (get-buffer-create timeline-buffer-name)
+    (let* ((cur (point))
+           (pos (point-marker))
+           (user (mstdn-entry-user entry))
+           (in-reply-to-account-id (mstdn-entry-in-reply-to-account-id entry))
+           (app (mstdn-entry-application entry))
            (text (format timeline-mstdn-format
                          (mstdn-entry-id entry)
                          (mstdn-user-id user)
@@ -122,15 +146,15 @@
                          (mstdn-user-display-name user)
                          (mstdn-application-name app)
                          (mstdn-entry-content entry))))
-      (if (not (equal "sync.twi2mstdn.space" (mstdn-application-name app)))
-        (progn
-          (goto-char 1)
-          (insert (mstdn-text-plain text))
-          (if (< cur 50) ;; なんとなくこの文字以内なら下に流れないようにする
-              (goto-char cur)
-            (goto-char (marker-position pos))))))))
-
-
+      (if (and (not (equal "sync.twi2mstdn.space" (mstdn-application-name app)))
+               (or (equal nil in-reply-to-account-id)
+                   (equal "24312" in-reply-to-account-id)))
+          (progn
+            (goto-char 1)
+            (insert (mstdn-text-plain text))
+            (if (< cur 50) ;; なんとなくこの文字以内なら下に流れないようにする
+                (goto-char cur)
+              (goto-char (marker-position pos))))))))
 
 (defun mstdn-output-filter (process output)
   "一時バッファに書き込み"
@@ -235,7 +259,7 @@
   (with-current-buffer (mastodon-edit-buffer)
     (if (eq (point-max) 1)
         (progn
-          (insert (format mstdn-toot-footer "" "" "public"))
+          (insert (format mstdn-toot-footer "" "" "unlisted"))
           (goto-char 1)))))
 
 
@@ -363,8 +387,9 @@
         ("in_reply_to_id" . ,(or (mstdn-status-edit-attr "in_reply_to_id" txt) ""))
         ("sensitive" . ,(or (mstdn-status-edit-attr "sensitive" txt) ""))
         ("spoiler_text" . ,(or (mstdn-status-edit-attr "spoiler_text" txt) ""))
-        ("visibility" . ,(or (mstdn-status-edit-attr "visibility" txt) ""))))))
-
+        ;; ("visibility" . ,(or (mstdn-status-edit-attr "visibility" txt) ""))
+        ("visibility" . "unlisted")
+        ))))
 
 (defun mastodon-api-headers ()
   "API リクエストヘッダ"
@@ -487,7 +512,6 @@
   "Major mode for mastodon."
   (interactive)
   (mastodon-timeline-mode))
-
 
 
 (defun mastodon-edit-mode ()
