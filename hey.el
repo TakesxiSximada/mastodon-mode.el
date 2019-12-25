@@ -13,14 +13,24 @@
     (switch-to-buffer buf)  ;; バッファ切り替え
     (kill-all-local-variables)  ;; バッファローカル変数初期化
     (setq mode-name "HEY")  ;; major-mode名の設定
-    (use-local-map hey-edit-mode-map)  ;; key mapの適応
-    ))
+    (use-local-map hey-edit-mode-map)))  ;; key mapの適応
+
+
+(defun hey-get-edit-buffeer-text ()
+  "編集バッファのtextを取得する"
+  (with-current-buffer "*HEY EDIT*"
+    (buffer-substring-no-properties (point-min) (point-max))))
+
 
 (defun hey-post (&rest args)
   "投稿"
   (interactive)
   (message "posted!!")
+  (request "http://me:testing@hey.symdon.local/api/@sximada/comments/"
+    :type "POST"
+    :data (hey-get-edit-buffeer-text))
   (kill-buffer "*HEY EDIT*"))
+
 
 (defvar hey-edit-mode-map (make-sparse-keymap))  ;; 編集モードのキーマップ
 
